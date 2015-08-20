@@ -1,0 +1,51 @@
+#cloud-config
+
+coreos:
+  update:
+    group: stable
+    reboot-strategy: off
+
+  units:
+    - name: db.service
+      command: start
+      content: |
+        [Unit]
+        Description=DynamoDB Local
+        After=docker.service
+
+        [Service]
+        ExecStartPre=-/usr/bin/docker kill db
+        ExecStartPre=-/usr/bin/docker rm db
+        ExecStart=/usr/bin/docker run --name db \
+                      deangiberson/aws-dynamodb-local
+        ExecStop=/usr/bin/docker kill db
+
+    - name: ap.service
+      command: start
+      content: |
+        [Unit]
+        Description=reInvent sessions search API
+        Requires=db.service
+
+        [Service]
+        ExecStartPre=-/usr/bin/docker kill ap
+        ExecStartPre=-/usr/bin/docker rm ap
+        ExecStart=/usr/bin/docker run --name ap \
+                      --link db:dynamodb \
+                      -e AWS_REGION=${AWS_REGION} \
+                      -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+                      -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+                      -e CONFIG_FILE_PATH=/go/src/github.com/supinf/reinvent-sessions-api/config.json \
+                      -v /home/core/share:/go/src/github.com/supinf/reinvent-sessions-api \
+                      -p 80:80 \
+                      -c 256 -m 128m \
+                      supinf/reinvent-sessions:base \
+                      go run /go/src/github.com/supinf/reinvent-sessions-api/main.go
+        ExecStop=/usr/bin/docker kill ap
+
+write_files:
+  - path: /etc/resolv.conf
+    permissions: 0644
+    owner: root
+    content: |
+      nameserver 8.8.8.8
