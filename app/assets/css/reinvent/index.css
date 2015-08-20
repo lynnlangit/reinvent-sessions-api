@@ -1,0 +1,44 @@
+
+#session-detail {
+  top: 50px;
+}
+#session-detail .modal-header {
+  padding-bottom: 0;
+}
+#session-detail hr {
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+#session-detail .modal-title {
+  width: 500px;
+}
+#session-detail-abbreviation {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.sess_id > div {
+  width: 50px;
+}
+.sess_abbreviation > div {
+  width: 80px;
+}
+.sess_title > div {
+  width: 450px;
+}
+.sess_type > div, .sess_track > div, .sess_level_mod > div {
+  display: block;
+  width: 100px;
+}
+.sess_title a {
+  cursor: pointer;
+}
+.sess_abstract, .sess_length, .sess_level {
+  display: none;
+}
+
+#count {
+  float: right;
+  margin: 37px 0 0 0;
+  color: silver;
+}

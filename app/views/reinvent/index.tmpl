@@ -1,0 +1,96 @@
+{{ define "title" }}Sessions | {{ .AppName }}{{ end }}
+{{ define "css" }}<link rel="stylesheet" href="{{ .StaticFileHost }}/assets/css/reinvent/index.css">{{ end }}
+{{ define "js" }}<script type="text/jsx" src="{{ .StaticFileHost }}/assets/js/reinvent/index.jsx"></script>{{ end }}
+{{ define "content" }}
+
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <form class="navbar-form navbar-left" role="search">
+      <div class="btn-group" data-filter-key="type">
+        <a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          <span class="caption">All</span>&nbsp;
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href="#-1">All</a></li>
+          <li><a href="#1040">Breakout Session</a></li>
+          <li><a href="#12223">General Activity</a></li>
+          <li><a href="#12523">Meal</a></li>
+          <li><a href="#12603">Hands-on Lab</a></li>
+          <li><a href="#12604">Certification</a></li>
+        </ul>
+      </div>
+      <div class="btn-group" data-filter-key="track">
+        <a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          <span class="caption">All</span>&nbsp;
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href="#-1">All</a></li>
+          <li><a href="#10482">Architecture</a></li>
+          <li><a href="#10483">Big Data &amp; Analytics</a></li>
+          <li><a href="#10484">Compute</a></li>
+          <li><a href="#10485">Databases</a></li>
+          <li><a href="#10481">DevOps</a></li>
+          <li><a href="#10486">Developer Tools</a></li>
+          <li><a href="#10492">Gaming</a></li>
+          <li><a href="#10491">IT Strategy &amp; Migration</a></li>
+          <li><a href="#10493">Mobile Developer &amp; IoT</a></li>
+          <li><a href="#10490">Networking</a></li>
+          <li><a href="#10489">Security &amp; Compliance</a></li>
+          <li><a href="#10488">Spotlight</a></li>
+          <li><a href="#10487">Storage &amp; Content Delivery</a></li>
+        </ul>
+      </div>
+      <div class="btn-group" data-filter-key="level">
+        <a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          <span class="caption">All</span>&nbsp;
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href="#-1">All</a></li>
+          <li><a href="#10143">Expert (400 level)</a></li>
+          <li><a href="#10142">Advanced (300 level)</a></li>
+          <li><a href="#10141">Introductory (200 level)</a></li>
+        </ul>
+      </div>
+      <div class="form-group">
+        <input id="search-text" type="text" class="form-control" placeholder="Search" style="width: 250px;">
+      </div>
+    </form>
+    <h4 id="count"></h4>
+  </div>
+
+  <div class="table-outer"><div class="table-inner" style="height: 500px;">
+    <div id="data"></div>
+  </div></div>
+
+  <div id="session-detail" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="session-detail-label">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title" id="session-detail-title"></h3>
+          <hr>
+        </div>
+        <div class="modal-body">
+          <p style="position: relative;">
+            <div style="display: inline-block;float: right;">
+              <span id="session-detail-type" class="label label-default"></span>
+              <span id="session-detail-track" class="label label-default"></span>
+              <span id="session-detail-level" class="label label-default"></span>
+            </div>
+            <span id="session-detail-abbreviation"></span>
+          </p>
+          <p class="well well-sm">
+            <span id="session-detail-abstract"></span>
+          </p>
+          <p>
+            <span id="session-detail-length"></span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{{ end }}

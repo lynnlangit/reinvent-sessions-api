@@ -1,0 +1,17 @@
+
+#api-detail {
+  top: 50px;
+}
+#api-detail .modal-header {
+  padding-bottom: 0;
+}
+#api-detail hr {
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+.api-name a {
+  cursor: pointer;
+}
+.labels {
+  color: silver;
+}
