@@ -23,7 +23,7 @@ func TestDefaultConfig(t *testing.T) {
 		t.Errorf("Expected %v, but got %v", expected, actual.Port)
 		return
 	}
-	expected = false
+	expected = true
 	if actual.AccessLog != expected {
 		t.Errorf("Expected %v, but got %v", expected, actual.AccessLog)
 		return
@@ -39,7 +39,7 @@ func TestMerge(t *testing.T) {
 	cfg := Config{
 		Name:        "Test",
 		Port:        8080,
-		AccessLog:   true,
+		LogLevel:    6,
 		LimitVaryBy: &throttled.VaryBy{RemoteAddr: true},
 	}
 	actual := cfg.merge(defaultConfig())
@@ -47,7 +47,7 @@ func TestMerge(t *testing.T) {
 	expected := &Config{
 		Name:            "Test",
 		Port:            8080,
-		LogLevel:        1,
+		LogLevel:        6,
 		AccessLog:       true,
 		StaticFileHost:  "",
 		StaticFilePath:  gopath + "/src/github.com/supinf/reinvent-sessions-api/app",

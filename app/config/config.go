@@ -21,8 +21,8 @@ func defaultConfig() Config {
 	return Config{
 		Name:            "ReInvent-Sessions-API",
 		Port:            80,
-		LogLevel:        1,
-		AccessLog:       false,
+		LogLevel:        4,
+		AccessLog:       true,
 		StaticFileHost:  "",
 		StaticFilePath:  gopath + "/src/github.com/supinf/reinvent-sessions-api/app",
 		Timeout:         60 * time.Second,
