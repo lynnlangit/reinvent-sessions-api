@@ -16,7 +16,7 @@ $ go get github.com/supinf/reinvent-sessions-api/
 ### 2. Run this application
 
 ```shell
-$ AWS_REGION=us-west-2 AWS_ACCESS_KEY_ID=? AWS_SECRET_ACCESS_KEY=? APP_PORT=9000 ./reinvent-sessions-api
+$ AWS_REGION=us-west-2 AWS_ACCESS_KEY_ID=? AWS_SECRET_ACCESS_KEY=? APP_PORT=9000 reinvent-sessions-api
 ```
 
 ### 3. Access the application

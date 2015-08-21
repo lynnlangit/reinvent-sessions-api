@@ -35,7 +35,7 @@ func ListAPI() (apis []API) {
 				Necessary:   false,
 			},
 		},
-		Example: "http://example.com/reinvent/sessions?output=json&q=security%20400",
+		Example: "http://example.com:port/reinvent/sessions?output=json&q=security%20400",
 	})
 	apis = append(apis, API{
 		Name:        "/reinvent/session",
@@ -48,7 +48,7 @@ func ListAPI() (apis []API) {
 				Necessary:   true,
 			},
 		},
-		Example: "http://example.com/reinvent/session?id=1200",
+		Example: "http://example.com:port/reinvent/session?id=1200",
 	})
 	return apis
 }

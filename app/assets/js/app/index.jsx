@@ -7,6 +7,7 @@ $(document).ready(function () {
         idx = parseInt(tr.find('.api-index').text(), 10),
         api = apis[idx - 1],
         url = api.example.replace('example.com', location.hostname);
+    url = url.replace(':port', location.port ? ':'+location.port : '');
     $('#api-detail-title').text(api.name);
     $('#api-detail-method').text(api.method);
     $('#api-detail-description').text(api.description);
