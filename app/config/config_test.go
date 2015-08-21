@@ -41,6 +41,7 @@ func TestMerge(t *testing.T) {
 		Port:        8080,
 		LogLevel:    6,
 		LimitVaryBy: &throttled.VaryBy{RemoteAddr: true},
+		AwsLog:      true,
 	}
 	actual := cfg.merge(defaultConfig())
 	gopath := os.Getenv("GOPATH")
@@ -56,6 +57,7 @@ func TestMerge(t *testing.T) {
 		LimitBursts:     0,
 		LimitVaryBy:     &throttled.VaryBy{RemoteAddr: true},
 		LimitKeyCache:   0,
+		AwsLog:          true,
 		DynamoDbLocal:   "",
 	}
 	if !reflect.DeepEqual(actual, expected) {
@@ -77,6 +79,7 @@ func TestComplete(t *testing.T) {
 		LimitBursts:     1,
 		LimitVaryBy:     &throttled.VaryBy{RemoteAddr: true},
 		LimitKeyCache:   1,
+		AwsLog:          true,
 		DynamoDbLocal:   "dynamo",
 	})
 	if !actual.complete() {

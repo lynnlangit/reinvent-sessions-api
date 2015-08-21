@@ -30,6 +30,8 @@ func defaultConfig() Config {
 		LimitBursts:     0,
 		LimitVaryBy:     nil,
 		LimitKeyCache:   0,
+		AwsLog:          false,
+		AwsRoleExpiry:   5 * time.Minute,
 		DynamoDbLocal:   "",
 	}
 }
@@ -71,6 +73,8 @@ func environmentConfig() Config {
 		LimitBursts:     misc.Atoi(os.Getenv("APP_LIMIT_BURST")),
 		LimitVaryBy:     varyBy,
 		LimitKeyCache:   misc.Atoi(os.Getenv("APP_LIMIT_KEYCACHE")),
+		AwsLog:          misc.ParseBool(os.Getenv("APP_AWS_LOG")),
+		AwsRoleExpiry:   misc.ParseDuration(os.Getenv("APP_AWS_ROLE_EXPIRY")),
 		DynamoDbLocal:   os.Getenv("DYNAMODB_PORT_8000_TCP_ADDR"),
 	}
 }
@@ -147,8 +151,8 @@ func (config *Config) String() string {
 	return fmt.Sprintf(
 		"Name: %v, Port: %v, LogLevel: %v, AccessLog: %v, StaticFileHost: %v, StaticFilePath: %v, "+
 			"Timeout: %v, LimitRatePerMin: %v, LimitBursts: %v, LimitVaryBy: %v, LimitKeyCache: %v, "+
-			"DynamoDbLocal: %v",
+			"AwsRegion: %v, AwsLog: %v, AwsRoleExpiry: %v, DynamoDbLocal: %v",
 		config.Name, config.Port, config.LogLevel, config.AccessLog, config.StaticFileHost, config.StaticFilePath,
 		config.Timeout, config.LimitRatePerMin, config.LimitBursts, config.LimitVaryBy, config.LimitKeyCache,
-		config.DynamoDbLocal)
+		os.Getenv("AWS_REGION"), config.AwsLog, config.AwsRoleExpiry, config.DynamoDbLocal)
 }

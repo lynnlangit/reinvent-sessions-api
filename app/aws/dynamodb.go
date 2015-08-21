@@ -5,14 +5,28 @@ package aws
  */
 
 import (
+	"sync"
+
 	awssdk "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	appcfg "github.com/supinf/reinvent-sessions-api/app/config"
 )
 
+var dynamoCfg *awssdk.Config
+var dynamoOnce sync.Once
+
+func init() {
+	dynamoOnce.Do(func() {
+		dynamoCfg = config()
+		if host := appcfg.NewConfig().DynamoDbLocal; host != "" {
+			dynamoCfg.Endpoint = awssdk.String("http://" + host + ":8000")
+		}
+	})
+}
+
 // DynamoTables responses dynamodb tables
 func DynamoTables() (clusters []*string, e error) {
-	resp, err := dynamodb.New(dynamoCfg()).ListTables(nil)
+	resp, err := dynamodb.New(dynamoCfg).ListTables(nil)
 	if err != nil {
 		return nil, err
 	}
@@ -21,7 +35,7 @@ func DynamoTables() (clusters []*string, e error) {
 
 // DynamoTable responses a specific dynamodb table
 func DynamoTable(name string) (table *dynamodb.TableDescription, e error) {
-	resp, err := dynamodb.New(dynamoCfg()).DescribeTable(&dynamodb.DescribeTableInput{
+	resp, err := dynamodb.New(dynamoCfg).DescribeTable(&dynamodb.DescribeTableInput{
 		TableName: awssdk.String(name),
 	})
 	if err != nil {
@@ -32,7 +46,7 @@ func DynamoTable(name string) (table *dynamodb.TableDescription, e error) {
 
 // DynamoRecords responses dynamodb table records
 func DynamoRecords(name string) (records []map[string]*dynamodb.AttributeValue, count int64, e error) {
-	resp, err := dynamodb.New(dynamoCfg()).Scan(&dynamodb.ScanInput{
+	resp, err := dynamodb.New(dynamoCfg).Scan(&dynamodb.ScanInput{
 		TableName: awssdk.String(name),
 	})
 	if err != nil {
@@ -43,7 +57,7 @@ func DynamoRecords(name string) (records []map[string]*dynamodb.AttributeValue, 
 
 // DynamoRecord responses a dynamodb specific record
 func DynamoRecord(name string, key map[string]*dynamodb.AttributeValue) (record map[string]*dynamodb.AttributeValue, e error) {
-	resp, err := dynamodb.New(dynamoCfg()).GetItem(&dynamodb.GetItemInput{
+	resp, err := dynamodb.New(dynamoCfg).GetItem(&dynamodb.GetItemInput{
 		TableName: awssdk.String(name),
 		Key:       key,
 	})
@@ -55,7 +69,7 @@ func DynamoRecord(name string, key map[string]*dynamodb.AttributeValue) (record 
 
 // DynamoPutItem put an item
 func DynamoPutItem(name string, items map[string]*dynamodb.AttributeValue) (result map[string]*dynamodb.AttributeValue, e error) {
-	resp, err := dynamodb.New(dynamoCfg()).PutItem(&dynamodb.PutItemInput{
+	resp, err := dynamodb.New(dynamoCfg).PutItem(&dynamodb.PutItemInput{
 		TableName: awssdk.String(name),
 		Item:      items,
 	})
@@ -73,7 +87,7 @@ func DynamoDeleteItem(name string, attributes map[string]string) (result map[str
 			S: awssdk.String(value),
 		}
 	}
-	resp, err := dynamodb.New(dynamoCfg()).DeleteItem(&dynamodb.DeleteItemInput{
+	resp, err := dynamodb.New(dynamoCfg).DeleteItem(&dynamodb.DeleteItemInput{
 		TableName: awssdk.String(name),
 		Key:       items,
 	})
@@ -104,7 +118,7 @@ func DynamoCreateTable(name string, attributes map[string]string, keys map[strin
 		ReadCapacityUnits:  awssdk.Int64(readCapacityUnits),
 		WriteCapacityUnits: awssdk.Int64(writeCapacityUnits),
 	}
-	resp, err := dynamodb.New(dynamoCfg()).CreateTable(&dynamodb.CreateTableInput{
+	resp, err := dynamodb.New(dynamoCfg).CreateTable(&dynamodb.CreateTableInput{
 		TableName:             awssdk.String(name),
 		AttributeDefinitions:  attributeDefinitions,
 		KeySchema:             keySchema,
@@ -118,19 +132,11 @@ func DynamoCreateTable(name string, attributes map[string]string, keys map[strin
 
 // DynamoDropTable drops a specific dynamodb table
 func DynamoDropTable(name string) (table *dynamodb.TableDescription, e error) {
-	resp, err := dynamodb.New(dynamoCfg()).DeleteTable(&dynamodb.DeleteTableInput{
+	resp, err := dynamodb.New(dynamoCfg).DeleteTable(&dynamodb.DeleteTableInput{
 		TableName: awssdk.String(name),
 	})
 	if err != nil {
 		return nil, err
 	}
 	return resp.TableDescription, nil
-}
-
-func dynamoCfg() *awssdk.Config {
-	cfg := config()
-	if host := appcfg.NewConfig().DynamoDbLocal; host != "" {
-		cfg.Endpoint = awssdk.String("http://" + host + ":8000")
-	}
-	return cfg
 }

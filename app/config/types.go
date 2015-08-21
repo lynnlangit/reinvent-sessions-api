@@ -19,5 +19,7 @@ type Config struct {
 	LimitBursts     int
 	LimitVaryBy     *throttled.VaryBy
 	LimitKeyCache   int
+	AwsLog          bool
+	AwsRoleExpiry   time.Duration
 	DynamoDbLocal   string `trim:"true"`
 }
