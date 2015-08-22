@@ -26,6 +26,8 @@ func defaultConfig() Config {
 		AccessLog:       true,
 		StaticFileHost:  "",
 		StaticFilePath:  gopath + "/src/github.com/supinf/reinvent-sessions-api/app",
+		ValidHost:       "",
+		ValidUserAgent:  "",
 		CorsMethods:     "",
 		CorsOrigin:      "*",
 		Timeout:         60 * time.Second,
@@ -72,6 +74,8 @@ func environmentConfig() Config {
 		AccessLog:       misc.ParseBool(os.Getenv("APP_ACCESS_LOG")),
 		StaticFileHost:  os.Getenv("APP_STATIC_FILE_HOST"),
 		StaticFilePath:  os.Getenv("APP_STATIC_FILE_PATH"),
+		ValidHost:       os.Getenv("APP_VALID_HOST"),
+		ValidUserAgent:  os.Getenv("APP_VALID_USER_AGENT"),
 		CorsMethods:     os.Getenv("APP_ACCESS_CONTROL_ALLOW_METHODS"),
 		CorsOrigin:      os.Getenv("APP_ACCESS_CONTROL_ALLOW_ORIGIN"),
 		Timeout:         misc.ParseDuration(os.Getenv("APP_TIMEOUT")),
@@ -156,11 +160,13 @@ func (config *Config) trimWhitespace() {
 func (config *Config) String() string {
 	return fmt.Sprintf(
 		"Name: %v, Port: %v, Stage: %v, LogLevel: %v, AccessLog: %v, "+
-			"StaticFileHost: %v, StaticFilePath: %v, CorsMethods: %v, CorsOrigin: %v, "+
+			"StaticFileHost: %v, StaticFilePath: %v, "+
+			"ValidHost: %v, ValidUserAgent: %v, CorsMethods: %v, CorsOrigin: %v, "+
 			"Timeout: %v, LimitRatePerMin: %v, LimitBursts: %v, LimitVaryBy: %v, LimitKeyCache: %v, "+
 			"AwsRegion: %v, AwsLog: %v, AwsRoleExpiry: %v, DynamoDbLocal: %v",
 		config.Name, config.Port, config.Stage, config.LogLevel, config.AccessLog,
-		config.StaticFileHost, config.StaticFilePath, config.CorsMethods, config.CorsOrigin,
+		config.StaticFileHost, config.StaticFilePath,
+		config.ValidHost, config.ValidUserAgent, config.CorsMethods, config.CorsOrigin,
 		config.Timeout, config.LimitRatePerMin, config.LimitBursts, config.LimitVaryBy, config.LimitKeyCache,
 		os.Getenv("AWS_REGION"), config.AwsLog, config.AwsRoleExpiry, config.DynamoDbLocal)
 }

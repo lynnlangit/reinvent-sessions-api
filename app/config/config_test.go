@@ -78,7 +78,9 @@ func TestComplete(t *testing.T) {
 	actual = *actual.merge(Config{
 		Stage:           "production",
 		AccessLog:       true,
-		StaticFileHost:  "some-host",
+		StaticFileHost:  "cdn-host",
+		ValidHost:       "valid-host",
+		ValidUserAgent:  "valid-ua",
 		CorsMethods:     "GET,POST",
 		LimitRatePerMin: 1,
 		LimitBursts:     1,
