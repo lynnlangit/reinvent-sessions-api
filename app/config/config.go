@@ -21,6 +21,7 @@ func defaultConfig() Config {
 	return Config{
 		Name:            "ReInvent-Sessions-API",
 		Port:            80,
+		Stage:           "",
 		LogLevel:        4,
 		AccessLog:       true,
 		StaticFileHost:  "",
@@ -66,6 +67,7 @@ func environmentConfig() Config {
 	return Config{
 		Name:            os.Getenv("APP_NAME"),
 		Port:            misc.ParseUint16(os.Getenv("APP_PORT")),
+		Stage:           os.Getenv("APP_STAGE"),
 		LogLevel:        misc.Atoi(os.Getenv("APP_LOG_LEVEL")),
 		AccessLog:       misc.ParseBool(os.Getenv("APP_ACCESS_LOG")),
 		StaticFileHost:  os.Getenv("APP_STATIC_FILE_HOST"),
@@ -153,11 +155,11 @@ func (config *Config) trimWhitespace() {
 // String returns a string representation of the config.
 func (config *Config) String() string {
 	return fmt.Sprintf(
-		"Name: %v, Port: %v, LogLevel: %v, AccessLog: %v, "+
+		"Name: %v, Port: %v, Stage: %v, LogLevel: %v, AccessLog: %v, "+
 			"StaticFileHost: %v, StaticFilePath: %v, CorsMethods: %v, CorsOrigin: %v, "+
 			"Timeout: %v, LimitRatePerMin: %v, LimitBursts: %v, LimitVaryBy: %v, LimitKeyCache: %v, "+
 			"AwsRegion: %v, AwsLog: %v, AwsRoleExpiry: %v, DynamoDbLocal: %v",
-		config.Name, config.Port, config.LogLevel, config.AccessLog,
+		config.Name, config.Port, config.Stage, config.LogLevel, config.AccessLog,
 		config.StaticFileHost, config.StaticFilePath, config.CorsMethods, config.CorsOrigin,
 		config.Timeout, config.LimitRatePerMin, config.LimitBursts, config.LimitVaryBy, config.LimitKeyCache,
 		os.Getenv("AWS_REGION"), config.AwsLog, config.AwsRoleExpiry, config.DynamoDbLocal)

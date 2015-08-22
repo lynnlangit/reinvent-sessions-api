@@ -76,6 +76,7 @@ func TestComplete(t *testing.T) {
 		return
 	}
 	actual = *actual.merge(Config{
+		Stage:           "production",
 		AccessLog:       true,
 		StaticFileHost:  "some-host",
 		CorsMethods:     "GET,POST",

@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Name            string `trim:"true"`
 	Port            uint16
+	Stage           string
 	LogLevel        int
 	AccessLog       bool
 	StaticFileHost  string `trim:"true"`

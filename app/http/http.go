@@ -89,12 +89,16 @@ func RenderHTML(w http.ResponseWriter, templatePath []string, data interface{}, 
 	if IsInvalid(w, err, "@RenderHTML") {
 		return
 	}
-	// if err := tmpl.Execute(w, data, cfg.StaticFileHost); err != nil {
+	stage := cfg.Stage
+	if !misc.ZeroOrNil(stage) {
+		stage = stage + "/"
+	}
 	if err := tmpl.Execute(w, struct {
 		AppName        string
+		AppStage       string
 		StaticFileHost string
 		Data           interface{}
-	}{cfg.Name, cfg.StaticFileHost, data}); err != nil {
+	}{cfg.Name, stage, cfg.StaticFileHost, data}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		logs.Errorf("ERROR: @RenderHTML %s", err.Error())
 		return
