@@ -4,6 +4,7 @@ re:Invent sessions API
 ## Description
 
 Search sessions on AWS re:Invent  
+https://api.supinf.co.jp/v1/reinvent-sessions?q=Expert%20400
 
 ## Basic Usage
 
