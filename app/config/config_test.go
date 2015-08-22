@@ -52,12 +52,15 @@ func TestMerge(t *testing.T) {
 		AccessLog:       true,
 		StaticFileHost:  "",
 		StaticFilePath:  gopath + "/src/github.com/supinf/reinvent-sessions-api/app",
+		CorsMethods:     "",
+		CorsOrigin:      "*",
 		Timeout:         60 * time.Second,
 		LimitRatePerMin: 0,
 		LimitBursts:     0,
 		LimitVaryBy:     &throttled.VaryBy{RemoteAddr: true},
 		LimitKeyCache:   0,
 		AwsLog:          true,
+		AwsRoleExpiry:   5 * time.Minute,
 		DynamoDbLocal:   "",
 	}
 	if !reflect.DeepEqual(actual, expected) {
@@ -75,6 +78,7 @@ func TestComplete(t *testing.T) {
 	actual = *actual.merge(Config{
 		AccessLog:       true,
 		StaticFileHost:  "some-host",
+		CorsMethods:     "GET,POST",
 		LimitRatePerMin: 1,
 		LimitBursts:     1,
 		LimitVaryBy:     &throttled.VaryBy{RemoteAddr: true},

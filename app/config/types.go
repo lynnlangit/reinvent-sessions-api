@@ -14,6 +14,8 @@ type Config struct {
 	AccessLog       bool
 	StaticFileHost  string `trim:"true"`
 	StaticFilePath  string `trim:"true"`
+	CorsMethods     string `trim:"true"`
+	CorsOrigin      string `trim:"true"`
 	Timeout         time.Duration
 	LimitRatePerMin int
 	LimitBursts     int

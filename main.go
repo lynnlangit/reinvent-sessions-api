@@ -28,7 +28,7 @@ func main() {
 }
 
 func index() http.Handler {
-	return misc.Chain(func(w http.ResponseWriter, r *http.Request) {
+	return misc.Chain(true, false, func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
 			http.NotFound(w, r)
 			return
@@ -44,5 +44,5 @@ func version(w http.ResponseWriter, r *http.Request) {
 }
 func assets(cfg *config.Config) http.Handler {
 	fs := http.FileServer(http.Dir(path.Join(cfg.StaticFilePath, "assets")))
-	return misc.ChainZipHandler(http.StripPrefix("/assets/", fs))
+	return misc.Chain(false, true, http.StripPrefix("/assets/", fs).ServeHTTP)
 }
