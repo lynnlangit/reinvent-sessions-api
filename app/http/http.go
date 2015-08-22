@@ -166,8 +166,8 @@ func custom(log, cors, validate bool, f func(w http.ResponseWriter, r *http.Requ
 
 		// reject if the request is invalid
 		if validate {
-			if (!misc.ZeroOrNil(cfg.ValidHost) && strings.Contains(r.Host, cfg.ValidHost)) ||
-				(!misc.ZeroOrNil(cfg.ValidUserAgent) && strings.Contains(r.UserAgent(), cfg.ValidUserAgent)) {
+			if (!misc.ZeroOrNil(cfg.ValidHost) && !strings.Contains(r.Host, cfg.ValidHost)) ||
+				(!misc.ZeroOrNil(cfg.ValidUserAgent) && !strings.Contains(r.UserAgent(), cfg.ValidUserAgent)) {
 				logs.Infof("%s %s %s %s", addr, strconv.Itoa(http.StatusForbidden), r.Method, r.URL)
 				http.Error(w, "403 Forbidden", http.StatusForbidden)
 				return
