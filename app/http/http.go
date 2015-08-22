@@ -55,21 +55,12 @@ func RequestPostParam(r *http.Request, key string) (string, bool) {
 }
 
 // Chain enables middleware chaining
-func Chain(f func(w http.ResponseWriter, r *http.Request)) http.Handler {
-	if th == nil {
-		return alice.New(timeout).Then(http.HandlerFunc(logZipWriterF(f, true)))
+func Chain(log, cors bool, f func(w http.ResponseWriter, r *http.Request)) http.Handler {
+	chain := alice.New(timeout)
+	if th != nil {
+		chain = alice.New(th.Throttle, timeout)
 	}
-	return alice.New(th.Throttle, timeout).Then(http.HandlerFunc(logZipWriterF(f, true)))
-}
-
-// ChainLogZipHandler enables log & zip middleware chaining
-func ChainLogZipHandler(h http.Handler) http.Handler {
-	return alice.New(timeout).Then(logZipWriterH(h, true))
-}
-
-// ChainZipHandler enables zip middleware chaining
-func ChainZipHandler(h http.Handler) http.Handler {
-	return alice.New(timeout).Then(logZipWriterH(h, false))
+	return chain.Then(http.HandlerFunc(custom(f, log, cors)))
 }
 
 // RenderText write data as a simple text
@@ -152,18 +143,29 @@ func (r *customResponseWriter) WriteHeader(status int) {
 	r.status = status
 }
 
-func logZipWriterF(f func(w http.ResponseWriter, r *http.Request), log bool) func(w http.ResponseWriter, r *http.Request) {
+func custom(f func(w http.ResponseWriter, r *http.Request), log, cors bool) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ioWriter := w.(io.Writer)
-		if g, z, accept := zip(w, r); accept {
-			if g != nil {
-				ioWriter = g
+		for _, val := range misc.ParseCsvLine(r.Header.Get("Accept-Encoding")) {
+			if val == "gzip" {
+				w.Header().Set("Content-Encoding", "gzip")
+				g := gzip.NewWriter(w)
 				defer g.Close()
+				ioWriter = g
+				break
 			}
-			if z != nil {
-				ioWriter = z
+			if val == "deflate" {
+				w.Header().Set("Content-Encoding", "deflate")
+				z := zlib.NewWriter(w)
 				defer z.Close()
+				ioWriter = z
+				break
 			}
+		}
+		if !misc.ZeroOrNil(cfg.CorsMethods) {
+			w.Header().Set("Access-Control-Allow-Headers", "'*'")
+			w.Header().Set("Access-Control-Allow-Methods", "'"+cfg.CorsMethods+"'")
+			w.Header().Set("Access-Control-Allow-Origin", "''"+cfg.CorsOrigin+"'")
 		}
 		writer := &customResponseWriter{Writer: ioWriter, ResponseWriter: w, status: 200}
 		f(writer, r)
@@ -171,45 +173,6 @@ func logZipWriterF(f func(w http.ResponseWriter, r *http.Request), log bool) fun
 			logs.Infof("%s %s %s %s", r.RemoteAddr, strconv.Itoa(writer.status), r.Method, r.URL)
 		}
 	}
-}
-
-func logZipWriterH(h http.Handler, log bool) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ioWriter := w.(io.Writer)
-		if g, z, accept := zip(w, r); accept {
-			if g != nil {
-				ioWriter = g
-				defer g.Close()
-			}
-			if z != nil {
-				ioWriter = z
-				defer z.Close()
-			}
-		}
-		writer := &customResponseWriter{Writer: ioWriter, ResponseWriter: w, status: 200}
-		h.ServeHTTP(writer, r)
-		if log && cfg.AccessLog {
-			logs.Infof("%s %s %s %s", r.RemoteAddr, strconv.Itoa(writer.status), r.Method, r.URL)
-		}
-	})
-}
-
-func zip(w http.ResponseWriter, r *http.Request) (g *gzip.Writer, z *zlib.Writer, accept bool) {
-	for _, val := range misc.ParseCsvLine(r.Header.Get("Accept-Encoding")) {
-		if val == "gzip" {
-			w.Header().Set("Content-Encoding", "gzip")
-			g = gzip.NewWriter(w)
-			accept = true
-			break
-		}
-		if val == "deflate" {
-			w.Header().Set("Content-Encoding", "deflate")
-			z = zlib.NewWriter(w)
-			accept = true
-			break
-		}
-	}
-	return g, z, accept
 }
 
 func timeout(h http.Handler) http.Handler {

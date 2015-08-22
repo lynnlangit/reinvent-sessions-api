@@ -18,7 +18,7 @@ func init() {
 	 * @param string output [The formatting style for response body (html | json).]
 	 * @param string q [Space seperated words to use in filtering the response data (for example, best practice).]
 	 */
-	http.Handle("/reinvent-sessions", misc.Chain(func(w http.ResponseWriter, r *http.Request) {
+	http.Handle("/reinvent-sessions", misc.Chain(true, false, func(w http.ResponseWriter, r *http.Request) {
 		output, found := misc.RequestGetParam(r, "output")
 		if found && (strings.ToLower(output) == "html") {
 			misc.RenderHTML(w, []string{"reinvent/index.tmpl"}, nil, nil)
@@ -65,7 +65,7 @@ func init() {
 	 * session
 	 * @param string id [Session ID]
 	 */
-	http.Handle("/reinvent-session", misc.Chain(func(w http.ResponseWriter, r *http.Request) {
+	http.Handle("/reinvent-session", misc.Chain(true, false, func(w http.ResponseWriter, r *http.Request) {
 		id, found := misc.RequestGetParam(r, "id")
 		if !found {
 			fmt.Print(w, "Parameter [ id ] is needed.")
