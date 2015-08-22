@@ -77,7 +77,7 @@ var Table = React.createClass({
   },
   componentDidMount: function() {
     var self = this;
-    app.func.ajax({type: 'GET', url: '/reinvent-sessions', success: function (data) {
+    app.func.ajax({type: 'GET', url: 'reinvent-sessions', success: function (data) {
       sessions = data.sessions;
       self.setState({data: self.filter()});
     }});

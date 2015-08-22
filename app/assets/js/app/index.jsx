@@ -6,7 +6,7 @@ $(document).ready(function () {
     var tr = $(e.relatedTarget).closest('tr'),
         idx = parseInt(tr.find('.api-index').text(), 10),
         api = apis[idx - 1],
-        url = '//' + location.hostname + (location.port ? ':'+location.port : '') + api.example;
+        url = location.href.replace(location.search, '')+api.example;
     $('#api-detail-title').text(api.name);
     $('#api-detail-method').text(api.method);
     $('#api-detail-description').text(api.description);
@@ -36,7 +36,7 @@ var Table = React.createClass({
   },
   componentDidMount: function() {
     var self = this;
-    app.func.ajax({type: 'GET', url: '/api-list', success: function (data) {
+    app.func.ajax({type: 'GET', url: 'api-list', success: function (data) {
       apis = data;
       self.setState({data: apis});
     }});
