@@ -162,10 +162,10 @@ func custom(f func(w http.ResponseWriter, r *http.Request), log, cors bool) func
 				break
 			}
 		}
-		if !misc.ZeroOrNil(cfg.CorsMethods) {
-			w.Header().Set("Access-Control-Allow-Headers", "'*'")
-			w.Header().Set("Access-Control-Allow-Methods", "'"+cfg.CorsMethods+"'")
-			w.Header().Set("Access-Control-Allow-Origin", "''"+cfg.CorsOrigin+"'")
+		if cors && !misc.ZeroOrNil(cfg.CorsMethods) {
+			w.Header().Set("Access-Control-Allow-Headers", "*")
+			w.Header().Set("Access-Control-Allow-Methods", cfg.CorsMethods)
+			w.Header().Set("Access-Control-Allow-Origin", cfg.CorsOrigin)
 		}
 		writer := &customResponseWriter{Writer: ioWriter, ResponseWriter: w, status: 200}
 		f(writer, r)
