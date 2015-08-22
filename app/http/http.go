@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"path"
 	"strconv"
+	"strings"
 	"text/template"
 	"time"
 
@@ -55,12 +56,13 @@ func RequestPostParam(r *http.Request, key string) (string, bool) {
 }
 
 // Chain enables middleware chaining
-func Chain(log, cors bool, f func(w http.ResponseWriter, r *http.Request)) http.Handler {
-	chain := alice.New(timeout)
-	if th != nil {
-		chain = alice.New(th.Throttle, timeout)
-	}
-	return chain.Then(http.HandlerFunc(custom(f, log, cors)))
+func Chain(f func(w http.ResponseWriter, r *http.Request)) http.Handler {
+	return chain(true, false, true, f)
+}
+
+// AssetsChain enables middleware chaining
+func AssetsChain(f func(w http.ResponseWriter, r *http.Request)) http.Handler {
+	return chain(false, true, false, f)
 }
 
 // RenderText write data as a simple text
@@ -147,8 +149,31 @@ func (r *customResponseWriter) WriteHeader(status int) {
 	r.status = status
 }
 
-func custom(f func(w http.ResponseWriter, r *http.Request), log, cors bool) func(w http.ResponseWriter, r *http.Request) {
+func chain(log, cors, validate bool, f func(w http.ResponseWriter, r *http.Request)) http.Handler {
+	chain := alice.New(timeout)
+	if th != nil {
+		chain = alice.New(th.Throttle, timeout)
+	}
+	return chain.Then(http.HandlerFunc(custom(log, cors, validate, f)))
+}
+
+func custom(log, cors, validate bool, f func(w http.ResponseWriter, r *http.Request)) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		addr := r.RemoteAddr
+		if ip, found := header(r, "X-Forwarded-For"); found {
+			addr = ip
+		}
+
+		// reject if the request is invalid
+		if validate {
+			if (!misc.ZeroOrNil(cfg.ValidHost) && strings.Contains(r.Host, cfg.ValidHost)) ||
+				(!misc.ZeroOrNil(cfg.ValidUserAgent) && strings.Contains(r.UserAgent(), cfg.ValidUserAgent)) {
+				logs.Infof("%s %s %s %s", addr, strconv.Itoa(http.StatusForbidden), r.Method, r.URL)
+				http.Error(w, "403 Forbidden", http.StatusForbidden)
+				return
+			}
+		}
+		// compress settings
 		ioWriter := w.(io.Writer)
 		for _, val := range misc.ParseCsvLine(r.Header.Get("Accept-Encoding")) {
 			if val == "gzip" {
@@ -166,17 +191,33 @@ func custom(f func(w http.ResponseWriter, r *http.Request), log, cors bool) func
 				break
 			}
 		}
+		writer := &customResponseWriter{Writer: ioWriter, ResponseWriter: w, status: 200}
+
+		// CORS headers
 		if cors && !misc.ZeroOrNil(cfg.CorsMethods) {
 			w.Header().Set("Access-Control-Allow-Headers", "*")
 			w.Header().Set("Access-Control-Allow-Methods", cfg.CorsMethods)
 			w.Header().Set("Access-Control-Allow-Origin", cfg.CorsOrigin)
 		}
-		writer := &customResponseWriter{Writer: ioWriter, ResponseWriter: w, status: 200}
+
+		// route to the controllers
 		f(writer, r)
+
+		// access log
 		if log && cfg.AccessLog {
-			logs.Infof("%s %s %s %s", r.RemoteAddr, strconv.Itoa(writer.status), r.Method, r.URL)
+			logs.Infof("%s %s %s %s", addr, strconv.Itoa(writer.status), r.Method, r.URL)
 		}
 	}
+}
+
+func header(r *http.Request, key string) (string, bool) {
+	if r.Header == nil {
+		return "", false
+	}
+	if candidate := r.Header[key]; !misc.ZeroOrNil(candidate) {
+		return candidate[0], true
+	}
+	return "", false
 }
 
 func timeout(h http.Handler) http.Handler {

@@ -12,7 +12,7 @@ import (
 
 func init() {
 
-	http.Handle("/cron-list", misc.Chain(true, false, func(w http.ResponseWriter, r *http.Request) {
+	http.Handle("/cron-list", misc.Chain(func(w http.ResponseWriter, r *http.Request) {
 		entries := []*cron.Entry{}
 		for _, c := range crons.Crons() {
 			entries = append(entries, c.Entries()...)
@@ -24,7 +24,7 @@ func init() {
 		misc.RenderJSON(w, next, nil)
 	}))
 
-	http.Handle("/cron-results", misc.Chain(true, false, func(w http.ResponseWriter, r *http.Request) {
+	http.Handle("/cron-results", misc.Chain(func(w http.ResponseWriter, r *http.Request) {
 		results, _, err := models.GetCronResults()
 		misc.RenderJSON(w, results, err)
 	}))

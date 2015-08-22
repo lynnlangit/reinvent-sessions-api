@@ -10,7 +10,7 @@ import (
 
 func init() {
 
-	http.Handle("/api-list", misc.Chain(true, false, func(w http.ResponseWriter, r *http.Request) {
+	http.Handle("/api-list", misc.Chain(func(w http.ResponseWriter, r *http.Request) {
 		misc.RenderJSON(w, models.ListAPI(), nil)
 	}))
 
