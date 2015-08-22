@@ -42,15 +42,19 @@ var app = {};
 		}
 		return true;
 	});
-	function _ajax(type, url, data, onSuccess, dataType) {
-		var dt = dataType ? dataType : 'json';
+	function _ajax(arg) {
+		var dt = arg.dataType ? arg.dataType : 'json';
 		$.ajax({
-			url: url, type: type,
-			data: data, dataType: dt,
+			url: arg.url, type: arg.type,
+			data: arg.data, dataType: dt,
 			success: function (data) {
-				onSuccess && onSuccess(data);
+				arg.success && arg.success(data);
 			},
 			error: function(xhr, status, err) {
+				if (arg.error) {
+					arg.error(xhr, status, err);
+					return;
+				}
 				console.error(url, status, err.toString());
 			}
 		});

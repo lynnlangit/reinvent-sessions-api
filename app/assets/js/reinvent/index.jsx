@@ -1,8 +1,13 @@
 
-var table, sessions = [], filters = {type: -1, track: -1, level: -1, text: app.func.query('q')};
+var table, sessions = [], query = app.func.query('q'),
+    filters = {type: -1, track: -1, level: -1, text: ''};
+if (query != '') {
+  filters.text = query.replace(/\s/g,' ').replace(/　/g,' ');
+  filters.text = filters.text.replace(/^\s+|\s+$/gm,'').toUpperCase();
+}
 
 $(document).ready(function () {
-  if (filters.text != '') $('#search-text').val(filters.text);
+  if (query != '') $('#search-text').val(query);
   _resize();
 
   $('.dropdown-menu a').click(function() {
@@ -72,10 +77,10 @@ var Table = React.createClass({
   },
   componentDidMount: function() {
     var self = this;
-    app.func.ajax('GET', '/reinvent/sessions', '', function (data) {
+    app.func.ajax({type: 'GET', url: '/reinvent-sessions', success: function (data) {
       sessions = data.sessions;
       self.setState({data: self.filter()});
-    });
+    }});
   },
   componentWillReceiveProps: function() {
     this.setState({data: this.filter()});
@@ -88,10 +93,16 @@ var Table = React.createClass({
                   ((filters.level == -1) || (filters.level == session.levelId));
       if (filters.text != '') {
         var title = session.title.toUpperCase(),
-            abstract = session.abstract.toUpperCase();
+            abstract = session.abstract.toUpperCase(),
+            type = session.type.toUpperCase(),
+            track = session.track.toUpperCase(),
+            level = session.level.toUpperCase();
         $.map(filters.text.split(' '), function (word) {
-          match &= (session.abbreviation.indexOf(word) > -1) ||
-            (title.indexOf(word) > -1) || (abstract.indexOf(word) > -1);
+          match &= (session.id.indexOf(word) > -1) ||
+            (session.abbreviation.indexOf(word) > -1) ||
+            (title.indexOf(word) > -1) || (abstract.indexOf(word) > -1) ||
+            (type.indexOf(word) > -1) || (track.indexOf(word) > -1) ||
+            (level.indexOf(word) > -1);
         });
       }
       if (match) data.push(session);

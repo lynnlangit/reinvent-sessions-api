@@ -37,10 +37,10 @@ var Table = React.createClass({
   },
   componentDidMount: function() {
     var self = this;
-    app.func.ajax('GET', '/api/list', '', function (data) {
+    app.func.ajax({type: 'GET', url: '/api-list', success: function (data) {
       apis = data;
       self.setState({data: apis});
-    });
+    }});
   },
   render: function() {
     var rows = this.state.data.map(function(record, index) {
