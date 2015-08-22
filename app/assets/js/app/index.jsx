@@ -6,13 +6,12 @@ $(document).ready(function () {
     var tr = $(e.relatedTarget).closest('tr'),
         idx = parseInt(tr.find('.api-index').text(), 10),
         api = apis[idx - 1],
-        url = api.example.replace('example.com', location.hostname);
-    url = url.replace(':port', location.port ? ':'+location.port : '');
+        url = '//' + location.hostname + (location.port ? ':'+location.port : '') + api.example;
     $('#api-detail-title').text(api.name);
     $('#api-detail-method').text(api.method);
     $('#api-detail-description').text(api.description);
     $('#api-detail-parameters').text(JSON.stringify(api.parameters, true, ' ').replace(/"/g, ''));
-    $('#api-detail-example').attr('href', url).text(url);
+    $('#api-detail-example').attr('href', url).text(location.protocol + url);
   });
 });
 
@@ -37,10 +36,10 @@ var Table = React.createClass({
   },
   componentDidMount: function() {
     var self = this;
-    app.func.ajax('GET', '/api/list', '', function (data) {
+    app.func.ajax({type: 'GET', url: '/api-list', success: function (data) {
       apis = data;
       self.setState({data: apis});
-    });
+    }});
   },
   render: function() {
     var rows = this.state.data.map(function(record, index) {

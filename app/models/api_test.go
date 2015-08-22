@@ -13,7 +13,7 @@ func TestListAPI(t *testing.T) {
 		return
 	}
 	actual = apis[1].Name
-	expected = "/reinvent/session"
+	expected = "/reinvent-session"
 	if actual != expected {
 		t.Errorf("Unexpected name. Expected %v, but got %v", expected, actual)
 		return
