@@ -15,3 +15,12 @@
 .labels {
   color: silver;
 }
+
+@media screen and (max-width: 750px) {
+  #data {
+    margin: 35px 0 0 0;
+  }
+  #api-detail {
+    top: 0px;
+  }
+}

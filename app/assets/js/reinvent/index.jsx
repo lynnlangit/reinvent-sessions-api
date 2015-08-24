@@ -37,7 +37,15 @@ $(window).keyup(function (e) {
 });
 $(window).resize(_resize);
 
+var windowWidth = 0;
+
 function _titleSize() {
+  if (windowWidth == 0) {
+    windowWidth = $(window).width();
+  }
+  if (windowWidth <= 750) {
+    return windowWidth-122;
+  }
   return $('.container').width()-466;
 }
 
