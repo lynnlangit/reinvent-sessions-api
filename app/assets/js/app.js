@@ -55,7 +55,7 @@ var app = {};
 					arg.error(xhr, status, err);
 					return;
 				}
-				console.error(url, status, err.toString());
+				console.error(arg.url, status, err.toString());
 			}
 		});
 	}

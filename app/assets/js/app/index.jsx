@@ -11,7 +11,7 @@ $(document).ready(function () {
     $('#api-detail-method').text(api.method);
     $('#api-detail-description').text(api.description);
     $('#api-detail-parameters').text(JSON.stringify(api.parameters, true, ' ').replace(/"/g, ''));
-    $('#api-detail-example').attr('href', url).text(location.protocol + url);
+    $('#api-detail-example').attr('href', url).text(url);
   });
 });
 

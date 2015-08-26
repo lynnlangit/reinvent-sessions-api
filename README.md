@@ -56,7 +56,7 @@ $ AWS_REGION=us-west-2 AWS_ACCESS_KEY_ID=? AWS_SECRET_ACCESS_KEY=? vagrant up
 ### 6. Test the application
 
 ```shell
-$ vagrant ssh -c "docker run -it --rm -v /home/core/share:/go/src/github.com/supinf/reinvent-sessions-api supinf/reinvent-sessions:base go test github.com/supinf/reinvent-sessions-api/..."
+$ vagrant ssh -c "docker run --rm -v /home/core/share:/go/src/github.com/supinf/reinvent-sessions-api supinf/reinvent-sessions:base go test github.com/supinf/reinvent-sessions-api/..."
 ```
 
 ### 7. Teardown the VM
