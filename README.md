@@ -6,7 +6,20 @@ re:Invent sessions API
 Search sessions on AWS re:Invent  
 https://api.supinf.co.jp/v1/
 
+
 ## Basic Usage
+
+### 1. Run as a container
+
+```shell
+$ docker run --rm -p 8080:9000 -e APP_PORT=9000 -e APP_LOG_LEVEL=99 -e AWS_REGION=us-west-2 -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy supinf/reinvent-sessions-api:latest
+```
+
+### 2. Access the application
+
+[http://localhost:8080/](http://localhost:8080/)
+
+## Usage with golang
 
 ### 1. Install go binary
 
@@ -53,13 +66,17 @@ $ AWS_REGION=us-west-2 AWS_ACCESS_KEY_ID=? AWS_SECRET_ACCESS_KEY=? vagrant up
 
 [http://reinvent-sessions-api.local/](http://reinvent-sessions-api.local/)
 
-### 6. Test the application
+### 6. Restart service & check application logs
+
+[http://reinvent-sessions-api.local:9000/container/statlog/ap](http://reinvent-sessions-api.local:9000/container/statlog/ap)
+
+### 7. Test the application
 
 ```shell
-$ vagrant ssh -c "docker run --rm -v /home/core/share:/go/src/github.com/supinf/reinvent-sessions-api supinf/reinvent-sessions:base go test github.com/supinf/reinvent-sessions-api/..."
+$ vagrant ssh -c "docker run --rm -v /home/core/share:/go/src/github.com/supinf/reinvent-sessions-api supinf/reinvent-sessions-api:base go test github.com/supinf/reinvent-sessions-api/..."
 ```
 
-### 7. Teardown the VM
+### 8. Teardown the VM
 
 ```shell
 $ vagrant halt
