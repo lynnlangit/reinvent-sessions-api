@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/throttled/throttled"
+	"gopkg.in/throttled/throttled.v1"
 )
 
 func TestDefaultConfig(t *testing.T) {

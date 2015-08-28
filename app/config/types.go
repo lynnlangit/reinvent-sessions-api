@@ -3,7 +3,7 @@ package config
 import (
 	"time"
 
-	"github.com/throttled/throttled"
+	"gopkg.in/throttled/throttled.v1"
 )
 
 // Config defines the application configurations

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/throttled/throttled"
+	"gopkg.in/throttled/throttled.v1"
 
 	"github.com/supinf/reinvent-sessions-api/app/misc"
 )

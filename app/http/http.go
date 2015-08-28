@@ -19,8 +19,8 @@ import (
 	"github.com/supinf/reinvent-sessions-api/app/config"
 	"github.com/supinf/reinvent-sessions-api/app/logs"
 	"github.com/supinf/reinvent-sessions-api/app/misc"
-	"github.com/throttled/throttled"
-	"github.com/throttled/throttled/store"
+	"gopkg.in/throttled/throttled.v1"
+	"gopkg.in/throttled/throttled.v1/store"
 )
 
 var cfg *config.Config
