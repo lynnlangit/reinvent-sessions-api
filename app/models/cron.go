@@ -91,7 +91,7 @@ func comfirmCronTableExists() error {
 	if _, err := aws.DynamoTable(cronTable); err == nil {
 		return nil
 	}
-	logs.Debug("[model] Cron table was not found. Try to make it. @aws.DynamoCreateTable")
+	logs.Debug.Print("[model] Cron table was not found. Try to make it. @aws.DynamoCreateTable")
 	attributes := map[string]string{
 		"Key": "S",
 	}

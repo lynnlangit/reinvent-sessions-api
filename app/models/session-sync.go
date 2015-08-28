@@ -56,7 +56,7 @@ func init() {
 
 // SyncReInventSessions collect session at AWS re:Invent
 func SyncReInventSessions(persist bool) (sessions []Session, err error) {
-	logs.Debug("[proc] SyncReInventSessions start")
+	logs.Debug.Print("[proc] SyncReInventSessions start")
 	requests := []url.Values{}
 	start := time.Now()
 
@@ -84,18 +84,18 @@ func SyncReInventSessions(persist bool) (sessions []Session, err error) {
 	for _, request := range requests {
 		list, err := getSessions(request)
 		if err != nil {
-			logs.Errorf("@models.getSessions Error: %s", err)
+			logs.Error.Printf("@models.getSessions Error: %s", err)
 			PersistCronResult("SyncReInventSessions",
 				fmt.Sprintf("length: %v, error: %v", len(sessions), err),
 				start, time.Now())
-			logs.Debug("[proc] SyncReInventSessions end")
+			logs.Debug.Print("[proc] SyncReInventSessions end")
 			return sessions, err
 		}
-		logs.Debugf("[proc] SyncReInventSessions got %v: %v", request["key"], len(list))
+		logs.Debug.Printf("[proc] SyncReInventSessions got %v: %v", request["key"], len(list))
 
 		for _, session := range list {
 			if sess, err := getSessionDetails(session); err != nil {
-				logs.Errorf("@reinvent.getSessionDetails Error: %s", err)
+				logs.Error.Printf("@reinvent.getSessionDetails Error: %s", err)
 			} else {
 				sessions = append(sessions, sess)
 			}
@@ -105,15 +105,15 @@ func SyncReInventSessions(persist bool) (sessions []Session, err error) {
 		for _, session := range sessions {
 			err := session.persist()
 			if err != nil {
-				logs.Errorf("@models.PersistSession Error: %s", err)
+				logs.Error.Printf("@models.PersistSession Error: %s", err)
 			}
 		}
-		logs.Debugf("[proc] SyncReInventSessions persisted: %v", len(sessions))
+		logs.Debug.Printf("[proc] SyncReInventSessions persisted: %v", len(sessions))
 	}
 	PersistCronResult("SyncReInventSessions",
 		fmt.Sprintf("length: %v, error: %v", len(sessions), "-"),
 		start, time.Now())
-	logs.Debug("[proc] SyncReInventSessions end")
+	logs.Debug.Print("[proc] SyncReInventSessions end")
 	return sessions, nil
 }
 

@@ -13,6 +13,7 @@ import (
 	"strings"
 	"text/template"
 	"time"
+	"unicode"
 
 	"github.com/justinas/alice"
 	"github.com/supinf/reinvent-sessions-api/app/config"
@@ -47,6 +48,40 @@ func init() {
 func RequestGetParam(r *http.Request, key string) (string, bool) {
 	value := r.URL.Query().Get(key)
 	return value, (value != "")
+}
+
+// RequestGetParamS retrives a request parameter as string
+func RequestGetParamS(r *http.Request, key, def string) string {
+	value, found := RequestGetParam(r, key)
+	if !found {
+		return def
+	}
+	return value
+}
+
+// RequestGetParamI retrives a request parameter as int
+func RequestGetParamI(r *http.Request, key string, def int) int {
+	value, found := RequestGetParam(r, key)
+	if !found {
+		return def
+	}
+	i, err := strconv.Atoi(value)
+	if err != nil {
+		return def
+	}
+	return i
+}
+
+// SplittedUpperStrings split word to array and change those words to UpperCase
+func SplittedUpperStrings(value string) []string {
+	splitted := strings.FieldsFunc(value, func(c rune) bool {
+		return !unicode.IsLetter(c) && !unicode.IsNumber(c)
+	})
+	words := make([]string, len(splitted))
+	for i, val := range splitted {
+		words[i] = strings.ToUpper(val)
+	}
+	return words
 }
 
 // RequestPostParam retrives a request parameter
@@ -102,7 +137,7 @@ func RenderHTML(w http.ResponseWriter, templatePath []string, data interface{}, 
 		Data           interface{}
 	}{cfg.Name, stage, cfg.StaticFileHost, data}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		logs.Errorf("ERROR: @RenderHTML %s", err.Error())
+		logs.Error.Printf("ERROR: @RenderHTML %s", err.Error())
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
@@ -125,7 +160,7 @@ func RenderJSON(w http.ResponseWriter, data interface{}, err error) {
 func IsInvalid(w http.ResponseWriter, err error, caption string) bool {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		logs.Errorf("ERROR: %s %s", caption, err.Error())
+		logs.Error.Printf("ERROR: %s %s", caption, err.Error())
 		return true
 	}
 	return false
@@ -168,7 +203,7 @@ func custom(log, cors, validate bool, f func(w http.ResponseWriter, r *http.Requ
 		if validate {
 			if (!misc.ZeroOrNil(cfg.ValidHost) && !strings.Contains(r.Host, cfg.ValidHost)) ||
 				(!misc.ZeroOrNil(cfg.ValidUserAgent) && !strings.Contains(r.UserAgent(), cfg.ValidUserAgent)) {
-				logs.Infof("%s %s %s %s", addr, strconv.Itoa(http.StatusForbidden), r.Method, r.URL)
+				logs.Info.Printf("%s %s %s %s", addr, strconv.Itoa(http.StatusForbidden), r.Method, r.URL)
 				http.Error(w, "403 Forbidden", http.StatusForbidden)
 				return
 			}
@@ -205,7 +240,7 @@ func custom(log, cors, validate bool, f func(w http.ResponseWriter, r *http.Requ
 
 		// access log
 		if log && cfg.AccessLog {
-			logs.Infof("%s %s %s %s", addr, strconv.Itoa(writer.status), r.Method, r.URL)
+			logs.Info.Printf("%s %s %s %s", addr, strconv.Itoa(writer.status), r.Method, r.URL)
 		}
 	}
 }

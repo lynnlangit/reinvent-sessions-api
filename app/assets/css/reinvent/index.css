@@ -38,6 +38,9 @@
 }
 
 @media screen and (max-width: 750px) {
+  #fork-me-on-github {
+    display: none;
+  }
   .navbar-form {
     margin: 30px 0 0 10px;
   }

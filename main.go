@@ -16,15 +16,15 @@ import (
 
 func main() {
 	cfg := config.NewConfig()
-	logs.Debug("[config] " + cfg.String())
+	logs.Debug.Print("[config] " + cfg.String())
 
 	http.Handle("/", index())
 	http.HandleFunc("/alive", alive)
 	http.HandleFunc("/version", version)
 	http.Handle("/assets/", assets(cfg))
 
-	logs.Infof("[service] listening on port %v", cfg.Port)
-	logs.Fatal(http.ListenAndServe(":"+fmt.Sprint(cfg.Port), nil))
+	logs.Info.Printf("[service] listening on port %v", cfg.Port)
+	logs.Fatal.Print(http.ListenAndServe(":"+fmt.Sprint(cfg.Port), nil))
 }
 
 func index() http.Handler {

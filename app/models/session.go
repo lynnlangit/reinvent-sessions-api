@@ -170,7 +170,7 @@ func comfirmSessionTableExists() (found bool, err error) {
 	if _, err := aws.DynamoTable(sessionTable); err == nil {
 		return true, nil
 	}
-	logs.Debug("[model] Session table was not found. Try to make it. @aws.DynamoCreateTable")
+	logs.Debug.Print("[model] Session table was not found. Try to make it. @aws.DynamoCreateTable")
 	attributes := map[string]string{
 		"ID": "S",
 	}

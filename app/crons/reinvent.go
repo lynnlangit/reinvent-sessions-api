@@ -12,7 +12,7 @@ func init() {
 	c.AddFunc("@every 60m", func() {
 		models.SyncReInventSessions(true)
 	})
-	logs.Info("[cron] SyncReInventSessions runs every 60 minutes.")
+	logs.Info.Print("[cron] SyncReInventSessions runs every 60 minutes.")
 
 	c.Start()
 }

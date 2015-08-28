@@ -2,97 +2,72 @@
 package logs
 
 import (
+	"io/ioutil"
 	"log"
 	"math"
+	"os"
 
 	"github.com/supinf/reinvent-sessions-api/app/config"
 )
 
-type Level int
-
-const (
-	FATAL Level = 1 + iota
-	ERROR
-	WARN
-	INFO
-	DEBUG
-	TRACE
+var (
+	Fatal *log.Logger
+	Error *log.Logger
+	Warn  *log.Logger
+	Info  *log.Logger
+	Debug *log.Logger
+	Trace *log.Logger
 )
 
-var level Level
+type logLevel int
+
+var level logLevel
+
+const (
+	fatal logLevel = 1 + iota
+	err
+	warn
+	info
+	debug
+	trace
+)
 
 func init() {
-	level = Level(math.Min(float64(TRACE), math.Max(float64(FATAL), float64(config.NewConfig().LogLevel))))
-}
+	level = logLevel(math.Min(float64(trace), math.Max(float64(fatal), float64(config.NewConfig().LogLevel))))
 
-func Trace(message string) {
-	if level >= TRACE {
-		log.Print(message)
+	handle := ioutil.Discard
+	if level >= fatal {
+		handle = os.Stderr
 	}
-}
+	Fatal = log.New(handle, "FATAL: ", log.Ldate|log.Ltime|log.Lshortfile)
 
-func Tracef(format string, v ...interface{}) {
-	if level >= TRACE {
-		log.Printf(format, v...)
+	handle = ioutil.Discard
+	if level >= err {
+		handle = os.Stderr
 	}
-}
+	Error = log.New(handle, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 
-func Debug(message string) {
-	if level >= DEBUG {
-		log.Print(message)
+	handle = ioutil.Discard
+	if level >= warn {
+		handle = os.Stdout
 	}
-}
+	Warn = log.New(handle, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
 
-func Debugf(format string, v ...interface{}) {
-	if level >= DEBUG {
-		log.Printf(format, v...)
+	handle = ioutil.Discard
+	if level >= info {
+		handle = os.Stdout
 	}
-}
+	Info = log.New(handle, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 
-func Info(message string) {
-	if level >= INFO {
-		log.Print(message)
+	handle = ioutil.Discard
+	if level >= debug {
+		handle = os.Stdout
 	}
-}
+	Debug = log.New(handle, "DEBUG: ", log.Ldate|log.Ltime|log.Lshortfile)
 
-func Infof(format string, v ...interface{}) {
-	if level >= INFO {
-		log.Printf(format, v...)
+	handle = ioutil.Discard
+	if level >= trace {
+		handle = os.Stdout
 	}
-}
-
-func Warn(message string) {
-	if level >= WARN {
-		log.Print(message)
-	}
-}
-
-func Warnf(format string, v ...interface{}) {
-	if level >= WARN {
-		log.Printf(format, v...)
-	}
-}
-
-func Error(message string) {
-	if level >= ERROR {
-		log.Print(message)
-	}
-}
-
-func Errorf(format string, v ...interface{}) {
-	if level >= ERROR {
-		log.Printf(format, v...)
-	}
-}
-
-func Fatal(v ...interface{}) {
-	if level >= FATAL {
-		log.Fatal(v)
-	}
-}
-
-func Fatalf(format string, v ...interface{}) {
-	if level >= FATAL {
-		log.Fatalf(format, v...)
-	}
+	Trace = log.New(handle, "TRACE: ", log.Ldate|log.Ltime|log.Lshortfile)
 }
