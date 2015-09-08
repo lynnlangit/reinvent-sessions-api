@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"net/http"
 	"path"
+	"time"
 
 	"github.com/supinf/reinvent-sessions-api/app/config"
 	_ "github.com/supinf/reinvent-sessions-api/app/controllers"
@@ -15,6 +17,8 @@ import (
 )
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
+
 	cfg := config.NewConfig()
 	logs.Debug.Print("[config] " + cfg.String())
 

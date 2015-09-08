@@ -33,7 +33,7 @@
 .sess_title a {
   cursor: pointer;
 }
-.sess_abstract, .sess_length, .sess_level {
+.sess_abstract, .sess_length, .sess_level , .sess_start, .sess_room {
   display: none;
 }
 

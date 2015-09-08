@@ -35,6 +35,7 @@ type Path struct {
 var path Path
 
 func init() {
+
 	path = Path{
 		xmlpath.MustCompile(`//div[@class='detailColumn']`),
 		xmlpath.MustCompile(`.//span[@class='abbreviation']`),
@@ -79,6 +80,17 @@ func SyncReInventSessions(persist bool) (sessions []Session, err error) {
 		data["sessionTypeID"] = []string{fmt.Sprint(sessionType.SearchID)}
 		requests = append(requests, data)
 	}
+	// DWR sessions
+	cookies := []*http.Cookie{}
+	if err := DwrSession(&cookies); err != nil {
+		logs.Error.Printf("@models.DwrSession Error: %s", err)
+		return sessions, err
+	}
+	sessionID := DwrSessionID(cookies)
+	if sessionID == "" {
+		logs.Error.Printf("@models.DwrSessionID")
+		return sessions, nil
+	}
 
 	// Request sessions
 	for _, request := range requests {
@@ -92,12 +104,24 @@ func SyncReInventSessions(persist bool) (sessions []Session, err error) {
 			return sessions, err
 		}
 		logs.Debug.Printf("[proc] SyncReInventSessions got %v: %v", request["key"], len(list))
+		time.Sleep(100 * time.Millisecond)
 
 		for _, session := range list {
 			if sess, err := getSessionDetails(session); err != nil {
 				logs.Error.Printf("@reinvent.getSessionDetails Error: %s", err)
 			} else {
+				schedule, err := SessionSchedule(sess.ID, cookies, sessionID)
+				if err != nil {
+					logs.Error.Printf("@models.SessionSchedule Error: %s", err)
+				}
+				if len(schedule.Data) > 0 {
+					sess.Date = schedule.Data[0].Date
+					sess.Start = schedule.Data[0].StartDateTime
+					sess.End = schedule.Data[0].EndDateTime
+					sess.Room = schedule.Data[0].Room
+				}
 				sessions = append(sessions, sess)
+				time.Sleep(100 * time.Millisecond)
 			}
 		}
 	}

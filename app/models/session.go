@@ -23,13 +23,19 @@ type Session struct {
 	Abbreviation string `json:"abbreviation"`
 	Title        string `json:"title"`
 	Abstract     string `json:"abstract"`
-	Length       string `json:"length"`
-	TypeID       int    `json:"typeId"`
-	Type         string `json:"type"`
-	TrackID      int    `json:"trackId"`
-	Track        string `json:"track"`
-	LevelID      int    `json:"levelId"`
-	Level        string `json:"level"`
+	// Recommended  bool   `json:"recommended"`
+	// Speakers     []string  `json:"speakers,omitempty"`
+	Date    int64     `json:"date"`
+	Start   time.Time `json:"start"`
+	End     time.Time `json:"end"`
+	Room    string    `json:"room"`
+	Length  string    `json:"length"`
+	TypeID  int       `json:"typeId"`
+	Type    string    `json:"type"`
+	TrackID int       `json:"trackId"`
+	Track   string    `json:"track"`
+	LevelID int       `json:"levelId"`
+	Level   string    `json:"level"`
 }
 
 // Sessions is a type of Session slice
@@ -93,6 +99,14 @@ func toSession(record map[string]*dynamodb.AttributeValue) Session {
 	session.Abbreviation = aws.DynamoS(record, "Abbreviation")
 	session.Title = aws.DynamoS(record, "Title")
 	session.Abstract = aws.DynamoS(record, "Abstract")
+	// session.Recommended = aws.DynamoB(record, "Recommended")
+
+	// FIXME http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html
+	// session.Speakers = []string{}
+	session.Date = aws.DynamoN64(record, "Date")
+	session.Start = aws.DynamoD(record, "Start")
+	session.End = aws.DynamoD(record, "End")
+	session.Room = aws.DynamoS(record, "Room")
 	session.Length = aws.DynamoS(record, "Length")
 	session.TypeID = aws.DynamoN(record, "TypeId")
 	session.Type = aws.DynamoS(record, "Type")
@@ -112,6 +126,7 @@ func (s *Session) Contains(words []string) bool {
 			strings.Contains(session.Abbreviation, word) ||
 			strings.Contains(session.Title, word) ||
 			strings.Contains(session.Abstract, word) ||
+			strings.Contains(session.Room, word) ||
 			strings.Contains(session.Type, word) ||
 			strings.Contains(session.Track, word) ||
 			strings.Contains(session.Level, word))
@@ -125,12 +140,9 @@ func (s *Session) toUpperFieldSession() Session {
 	session.Abbreviation = strings.ToUpper(s.Abbreviation)
 	session.Title = strings.ToUpper(s.Title)
 	session.Abstract = strings.ToUpper(s.Abstract)
-	session.Length = strings.ToUpper(s.Length)
-	session.TypeID = s.TypeID
+	session.Room = strings.ToUpper(s.Room)
 	session.Type = strings.ToUpper(s.Type)
-	session.TrackID = s.TrackID
 	session.Track = strings.ToUpper(s.Track)
-	session.LevelID = s.LevelID
 	session.Level = strings.ToUpper(s.Level)
 	return session
 }
@@ -146,6 +158,14 @@ func (s Session) persist() error {
 	}
 	if s.Abstract != "" {
 		items["Abstract"] = aws.DynamoAttributeS(s.Abstract)
+	}
+	// items["Recommended"] = aws.DynamoAttributeB(s.Recommended)
+	// session.Speakers = []string{}
+	items["Date"] = aws.DynamoAttributeN64(s.Date)
+	items["Start"] = aws.DynamoAttributeD(s.Start)
+	items["End"] = aws.DynamoAttributeD(s.End)
+	if s.Room != "" {
+		items["Room"] = aws.DynamoAttributeS(s.Room)
 	}
 	if s.Length != "" {
 		items["Length"] = aws.DynamoAttributeS(s.Length)

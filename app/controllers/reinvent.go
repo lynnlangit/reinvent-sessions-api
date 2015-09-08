@@ -7,7 +7,7 @@ import (
 	"time"
 	"unicode"
 
-	misc "github.com/supinf/reinvent-sessions-api/app/http"
+	util "github.com/supinf/reinvent-sessions-api/app/http"
 	"github.com/supinf/reinvent-sessions-api/app/models"
 )
 
@@ -18,23 +18,23 @@ func init() {
 	 * @param string output [The formatting style for response body (html | json).]
 	 * @param string q [Space seperated words to use in filtering the response data (for example, best practice).]
 	 */
-	http.Handle("/reinvent-sessions", misc.Chain(func(w http.ResponseWriter, r *http.Request) {
-		output, found := misc.RequestGetParam(r, "output")
+	http.Handle("/reinvent-sessions", util.Chain(func(w http.ResponseWriter, r *http.Request) {
+		output, found := util.RequestGetParam(r, "output")
 		if found && (strings.ToLower(output) == "html") {
-			misc.RenderHTML(w, []string{"reinvent/index.tmpl"}, nil, nil)
+			util.RenderHTML(w, []string{"reinvent/index.tmpl"}, nil, nil)
 			return
 		}
 		cron, err1 := models.GetCronResult("SyncReInventSessions")
-		if misc.IsInvalid(w, err1, "@aws.DynamoRecord") {
+		if util.IsInvalid(w, err1, "@aws.DynamoRecord") {
 			return
 		}
 		// get sessions
 		sessions, _, err2 := models.GetSessions()
-		if misc.IsInvalid(w, err2, "@aws.DynamoRecords") {
+		if util.IsInvalid(w, err2, "@aws.DynamoRecords") {
 			return
 		}
 		// filter
-		if q, found := misc.RequestGetParam(r, "q"); found {
+		if q, found := util.RequestGetParam(r, "q"); found {
 			splitted := strings.FieldsFunc(q, func(c rune) bool {
 				return !unicode.IsLetter(c) && !unicode.IsNumber(c)
 			})
@@ -50,7 +50,7 @@ func init() {
 			}
 			sessions = filtered
 		}
-		misc.RenderJSON(w, struct {
+		util.RenderJSON(w, struct {
 			Count    int              `json:"count"`
 			Sessions []models.Session `json:"sessions"`
 			Sync     time.Time        `json:"sync"`
@@ -65,16 +65,22 @@ func init() {
 	 * session
 	 * @param string id [Session ID]
 	 */
-	http.Handle("/reinvent-session", misc.Chain(func(w http.ResponseWriter, r *http.Request) {
-		id, found := misc.RequestGetParam(r, "id")
+	http.Handle("/reinvent-session", util.Chain(func(w http.ResponseWriter, r *http.Request) {
+		id, found := util.RequestGetParam(r, "id")
 		if !found {
 			fmt.Print(w, "Parameter [ id ] is needed.")
 			return
 		}
 		session, err := models.GetSession(id)
-		if misc.IsInvalid(w, err, "@aws.DynamoRecords") {
+		if util.IsInvalid(w, err, "@aws.DynamoRecords") {
 			return
 		}
-		misc.RenderJSON(w, session, nil)
+		util.RenderJSON(w, session, nil)
 	}))
+
+	http.Handle("/refresh", util.Chain(func(w http.ResponseWriter, r *http.Request) {
+		sessions, err := models.SyncReInventSessions(true)
+		util.RenderJSON(w, sessions, err)
+	}))
+
 }

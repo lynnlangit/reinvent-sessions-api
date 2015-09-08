@@ -53,6 +53,13 @@
           <li><a href="#10141">Introductory (200 level)</a></li>
         </ul>
       </div>
+      <div class="btn-group" data-filter-key="date">
+        <a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          <span class="caption">All</span>&nbsp;
+          <span class="caret"></span>
+        </a>
+        <ul id="day-filter" class="dropdown-menu"></ul>
+      </div>
       <div class="form-group">
         <input id="search-text" type="text" class="form-control" placeholder="Search" style="width: 250px;">
       </div>
@@ -86,7 +93,9 @@
             <span id="session-detail-abstract"></span>
           </p>
           <p>
+            <span id="session-detail-start"></span>,
             <span id="session-detail-length"></span>
+            <span id="session-detail-room"></span>
           </p>
         </div>
       </div>
