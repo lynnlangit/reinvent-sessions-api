@@ -19,6 +19,7 @@ type Config struct {
 	ValidUserAgent  string `trim:"true"`
 	CorsMethods     string `trim:"true"`
 	CorsOrigin      string `trim:"true"`
+	SecuredCookie   bool
 	Timeout         time.Duration
 	LimitRatePerMin int
 	LimitBursts     int
@@ -27,4 +28,9 @@ type Config struct {
 	AwsLog          bool
 	AwsRoleExpiry   time.Duration
 	DynamoDbLocal   string `trim:"true"`
+	CognitoPoolID   string `trim:"true"`
+	CognitoRoleArn  string `trim:"true"`
+	TwitterKey      string `trim:"true"`
+	TwitterSecret   string `trim:"true"`
+	TwitterCallback string `trim:"true"`
 }

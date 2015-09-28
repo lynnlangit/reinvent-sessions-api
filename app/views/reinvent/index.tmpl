@@ -1,7 +1,22 @@
 {{ define "title" }}Sessions | {{ .AppName }}{{ end }}
-{{ define "css" }}<link rel="stylesheet" href="{{ .StaticFileHost }}/assets/css/reinvent/index.css">{{ end }}
-{{ define "js" }}<script type="text/jsx" src="{{ .StaticFileHost }}/assets/js/reinvent/index.jsx"></script>{{ end }}
+{{ define "meta" }}{{ end }}
+{{ define "css" }}
+<link rel="stylesheet" href="{{ .StaticFileHost }}/assets/css/reinvent/index.css">
+{{ end }}
+{{ define "js" }}
+<script type="text/jsx" src="{{ .StaticFileHost }}/assets/js/reinvent/index.jsx"></script>
+<script type="text/javascript" src="{{ .StaticFileHost }}/assets/js/lib/aws-sdk-2.2.4.min.js"></script>
+<script type="text/javascript" src="{{ .StaticFileHost }}/assets/js/reinvent/cognito.js"></script>
+{{ end }}
 {{ define "content" }}
+
+  <div style="position: fixed;top: 30px;right: 125px;z-index: 10000;">
+    {{ if ne .Data.Token.ScreenName ""}}
+    <span>{{ .Data.Token.ScreenName }}</span>
+    {{ else }}
+    <a href="/twitter/signin">Twitter signin</a>
+    {{ end }}
+  </div>
 
   <div class="navbar-collapse" id="bs-example-navbar-collapse-1">
     <div class="navbar-form navbar-left" role="search">

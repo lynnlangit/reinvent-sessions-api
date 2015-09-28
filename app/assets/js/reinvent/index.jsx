@@ -1,5 +1,5 @@
 
-var table, sessions = [], query = app.func.query('q'),
+var table, client = false, sessions = [], query = app.func.query('q'),
     filters = {type: -1, track: -1, level: -1, date: -1, text: ''};
 if (query != '') {
   filters.text = query.replace(/\s/g,' ').replace(/　/g,' ');
@@ -149,7 +149,7 @@ var Table = React.createClass({
   },
   componentDidMount: function() {
     var self = this;
-    app.func.ajax({type: 'GET', url: 'reinvent-sessions', success: function (data) {
+    app.func.ajax({type: 'GET', url: 'sessions', success: function (data) {
       sessions = data.sessions;
       self.setState({data: self.filter()});
       _setDayOptions();

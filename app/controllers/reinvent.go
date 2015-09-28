@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -18,10 +17,20 @@ func init() {
 	 * @param string output [The formatting style for response body (html | json).]
 	 * @param string q [Space seperated words to use in filtering the response data (for example, best practice).]
 	 */
-	http.Handle("/reinvent-sessions", util.Chain(func(w http.ResponseWriter, r *http.Request) {
+	http.Handle("/reinvent/sessions", util.Chain(func(w http.ResponseWriter, r *http.Request) {
+		id, found := util.RequestGetParam(r, "id")
+		if found {
+			session, err := models.GetSession(id)
+			if util.IsInvalid(w, err, "@aws.DynamoRecords") {
+				return
+			}
+			util.RenderJSON(w, session, nil)
+			return
+		}
 		output, found := util.RequestGetParam(r, "output")
 		if found && (strings.ToLower(output) == "html") {
-			util.RenderHTML(w, []string{"reinvent/index.tmpl"}, nil, nil)
+			token, _, _ := checkTwitterSession(w, r)
+			util.RenderHTML(w, []string{"reinvent/index.tmpl"}, struct{ Token models.OAuthAuthorizedToken }{token}, nil)
 			return
 		}
 		cron, err1 := models.GetCronResult("SyncReInventSessions")
@@ -59,23 +68,6 @@ func init() {
 			Sessions: sessions,
 			Sync:     cron.LastEndDate,
 		}, nil)
-	}))
-
-	/**
-	 * session
-	 * @param string id [Session ID]
-	 */
-	http.Handle("/reinvent-session", util.Chain(func(w http.ResponseWriter, r *http.Request) {
-		id, found := util.RequestGetParam(r, "id")
-		if !found {
-			fmt.Print(w, "Parameter [ id ] is needed.")
-			return
-		}
-		session, err := models.GetSession(id)
-		if util.IsInvalid(w, err, "@aws.DynamoRecords") {
-			return
-		}
-		util.RenderJSON(w, session, nil)
 	}))
 
 	http.Handle("/refresh", util.Chain(func(w http.ResponseWriter, r *http.Request) {

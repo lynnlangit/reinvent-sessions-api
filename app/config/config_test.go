@@ -82,12 +82,16 @@ func TestComplete(t *testing.T) {
 		ValidHost:       "valid-host",
 		ValidUserAgent:  "valid-ua",
 		CorsMethods:     "GET,POST",
+		SecuredCookie:   true,
 		LimitRatePerMin: 1,
 		LimitBursts:     1,
 		LimitVaryBy:     &throttled.VaryBy{RemoteAddr: true},
 		LimitKeyCache:   1,
 		AwsLog:          true,
 		DynamoDbLocal:   "dynamo",
+		TwitterKey:      "key",
+		TwitterSecret:   "secret",
+		TwitterCallback: "url",
 	})
 	if !actual.complete() {
 		t.Errorf("Unexpected result. %v", actual)

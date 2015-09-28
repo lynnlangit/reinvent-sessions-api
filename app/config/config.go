@@ -30,6 +30,7 @@ func defaultConfig() Config {
 		ValidUserAgent:  "",
 		CorsMethods:     "",
 		CorsOrigin:      "*",
+		SecuredCookie:   false,
 		Timeout:         60 * time.Second,
 		LimitRatePerMin: 0,
 		LimitBursts:     0,
@@ -38,6 +39,11 @@ func defaultConfig() Config {
 		AwsLog:          false,
 		AwsRoleExpiry:   5 * time.Minute,
 		DynamoDbLocal:   "",
+		CognitoPoolID:   "us-east-1:12345",
+		CognitoRoleArn:  "arn:aws:iam::12345",
+		TwitterKey:      "",
+		TwitterSecret:   "",
+		TwitterCallback: "",
 	}
 }
 
@@ -78,6 +84,7 @@ func environmentConfig() Config {
 		ValidUserAgent:  os.Getenv("APP_VALID_USER_AGENT"),
 		CorsMethods:     os.Getenv("APP_ACCESS_CONTROL_ALLOW_METHODS"),
 		CorsOrigin:      os.Getenv("APP_ACCESS_CONTROL_ALLOW_ORIGIN"),
+		SecuredCookie:   misc.ParseBool(os.Getenv("APP_SECURED_COOKIE")),
 		Timeout:         misc.ParseDuration(os.Getenv("APP_TIMEOUT")),
 		LimitRatePerMin: misc.Atoi(os.Getenv("APP_LIMITRATE_PERMIN")),
 		LimitBursts:     misc.Atoi(os.Getenv("APP_LIMIT_BURST")),
@@ -86,6 +93,11 @@ func environmentConfig() Config {
 		AwsLog:          misc.ParseBool(os.Getenv("APP_AWS_LOG")),
 		AwsRoleExpiry:   misc.ParseDuration(os.Getenv("APP_AWS_ROLE_EXPIRY")),
 		DynamoDbLocal:   os.Getenv("DYNAMODB_PORT_8000_TCP_ADDR"),
+		CognitoPoolID:   os.Getenv("APP_COGNITO_POOL_ID"),
+		CognitoRoleArn:  os.Getenv("APP_COGNITO_ROLE_ARN"),
+		TwitterKey:      os.Getenv("APP_TWITTER_CONSUMER_KEY"),
+		TwitterSecret:   os.Getenv("APP_TWITTER_CONSUMER_SECRET"),
+		TwitterCallback: os.Getenv("APP_TWITTER_CONSUMER_CALLBACK"),
 	}
 }
 
@@ -161,12 +173,15 @@ func (config *Config) String() string {
 	return fmt.Sprintf(
 		"Name: %v, Port: %v, Stage: %v, LogLevel: %v, AccessLog: %v, "+
 			"StaticFileHost: %v, StaticFilePath: %v, "+
-			"ValidHost: %v, ValidUserAgent: %v, CorsMethods: %v, CorsOrigin: %v, "+
+			"ValidHost: %v, ValidUserAgent: %v, CorsMethods: %v, CorsOrigin: %v, SecuredCookie: %v, "+
 			"Timeout: %v, LimitRatePerMin: %v, LimitBursts: %v, LimitVaryBy: %v, LimitKeyCache: %v, "+
-			"AwsRegion: %v, AwsLog: %v, AwsRoleExpiry: %v, DynamoDbLocal: %v",
+			"AwsRegion: %v, AwsLog: %v, AwsRoleExpiry: %v, DynamoDbLocal: %v, CognitoPoolID: %v, "+
+			"CognitoRoleArn: %v, TwitterKey: %v, TwitterSecret: %v, TwitterCallback: %v",
 		config.Name, config.Port, config.Stage, config.LogLevel, config.AccessLog,
 		config.StaticFileHost, config.StaticFilePath,
-		config.ValidHost, config.ValidUserAgent, config.CorsMethods, config.CorsOrigin,
+		config.ValidHost, config.ValidUserAgent, config.CorsMethods, config.CorsOrigin, config.SecuredCookie,
 		config.Timeout, config.LimitRatePerMin, config.LimitBursts, config.LimitVaryBy, config.LimitKeyCache,
-		os.Getenv("AWS_REGION"), config.AwsLog, config.AwsRoleExpiry, config.DynamoDbLocal)
+		os.Getenv("AWS_REGION"), config.AwsLog, config.AwsRoleExpiry, config.DynamoDbLocal,
+		config.CognitoPoolID, config.CognitoRoleArn,
+		config.TwitterKey, config.TwitterSecret, config.TwitterCallback)
 }

@@ -90,6 +90,27 @@ func RequestPostParam(r *http.Request, key string) (string, bool) {
 	return value, (value != "")
 }
 
+// SetCookie set a cookie
+func SetCookie(key, value string, maxAge int) *http.Cookie {
+	return &http.Cookie{
+		Name:   key,
+		Value:  value,
+		MaxAge: maxAge,
+		Secure: cfg.SecuredCookie,
+		Path:   "/",
+	}
+}
+
+// GetCookie retrives a cookie value
+func GetCookie(r *http.Request, key string) (id string, err error) {
+	var c *http.Cookie
+	if c, err = r.Cookie(key); err != nil {
+		return
+	}
+	id = c.Value
+	return
+}
+
 // Chain enables middleware chaining
 func Chain(f func(w http.ResponseWriter, r *http.Request)) http.Handler {
 	return chain(true, false, true, f)
