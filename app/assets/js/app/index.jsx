@@ -36,7 +36,7 @@ var Table = React.createClass({
   },
   componentDidMount: function() {
     var self = this;
-    app.func.ajax({type: 'GET', url: 'api-list', success: function (data) {
+    app.func.ajax({type: 'GET', url: 'apis', success: function (data) {
       apis = data;
       self.setState({data: apis});
     }});

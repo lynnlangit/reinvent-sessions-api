@@ -7,25 +7,25 @@ func TestListAPI(t *testing.T) {
 	apis := ListAPI()
 
 	actual = len(apis)
-	expected = 2
+	expected = 1
 	if actual != expected {
 		t.Errorf("Unexpected API count. Expected %v, but got %v", expected, actual)
 		return
 	}
-	actual = apis[1].Name
-	expected = "/reinvent-session"
+	actual = apis[0].Name
+	expected = "/reinvent/sessions"
 	if actual != expected {
 		t.Errorf("Unexpected name. Expected %v, but got %v", expected, actual)
 		return
 	}
 	actual = len(apis[0].Parameters)
-	expected = 2
+	expected = 3
 	if actual != expected {
 		t.Errorf("Unexpected parameters count. Expected %v, but got %v", expected, actual)
 		return
 	}
-	actual = apis[1].Parameters[0].Necessary
-	expected = true
+	actual = apis[0].Parameters[0].Necessary
+	expected = false
 	if actual != expected {
 		t.Errorf("Expected %v, but got %v", expected, actual)
 		return

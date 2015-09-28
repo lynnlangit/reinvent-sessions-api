@@ -64,11 +64,11 @@ $ AWS_REGION=us-west-2 AWS_ACCESS_KEY_ID=? AWS_SECRET_ACCESS_KEY=? vagrant up
 
 ### 5. Confirm whether a service is running
 
-[http://reinvent-sessions-api.local/](http://reinvent-sessions-api.local/)
+[http://reinvent-sessions-api.localhost.com/](http://reinvent-sessions-api.localhost.com/)
 
 ### 6. Restart service & check application logs
 
-[http://reinvent-sessions-api.local:9000/container/statlog/ap](http://reinvent-sessions-api.local:9000/container/statlog/ap)
+[http://reinvent-sessions-api.localhost.com:9000/container/statlog/ap](http://reinvent-sessions-api.localhost.com:9000/container/statlog/ap)
 
 ### 7. Test the application
 

@@ -2,7 +2,7 @@
 # # vi: set ft=ruby :
 require 'fileutils'
 
-$app_name = ENV["APP_NAME"] || "reinvent-sessions-api.local"
+$app_name = ENV["APP_NAME"] || "reinvent-sessions-api.localhost.com"
 $coreos_ip = ENV["IPADDRESS"] || "192.168.100.5"
 $coreos_channel = "stable"
 $aws_region = ENV["AWS_REGION"] || "us-west-2"

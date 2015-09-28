@@ -20,7 +20,7 @@ type APIParameter struct {
 // ListAPI returns all API
 func ListAPI() (apis []API) {
 	apis = append(apis, API{
-		Name:        "/reinvent-sessions",
+		Name:        "/reinvent/sessions",
 		Description: "Lists re:Invent sessions",
 		Method:      "GET",
 		Parameters: []APIParameter{
@@ -30,25 +30,17 @@ func ListAPI() (apis []API) {
 				Necessary:   false,
 			},
 			APIParameter{
+				Key:         "id",
+				Description: "Session ID",
+				Necessary:   false,
+			},
+			APIParameter{
 				Key:         "q",
 				Description: "Space seperated words to filter the response data",
 				Necessary:   false,
 			},
 		},
-		Example: "reinvent-sessions?output=json&q=security%20400",
-	})
-	apis = append(apis, API{
-		Name:        "/reinvent-session",
-		Description: "View re:Invent session details",
-		Method:      "GET",
-		Parameters: []APIParameter{
-			APIParameter{
-				Key:         "id",
-				Description: "Session ID",
-				Necessary:   true,
-			},
-		},
-		Example: "reinvent-session?id=1200",
+		Example: "reinvent/sessions?output=json&q=security%20400",
 	})
 	return apis
 }
